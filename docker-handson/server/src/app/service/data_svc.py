@@ -1,4 +1,5 @@
 from app.model import Data
+from app.utils import Status, Database
 
 # Service Class to handle CRUD operations on Data Model.
 class DataService:
@@ -7,19 +8,21 @@ class DataService:
 
     # Create a new data object and add it to the data list.
     @staticmethod
-    def create(self, data: dict) -> tuple:
-        data_object = Data(data.get("message"), data.get("timestamp"), data.get("source_ip"))
-        # self.data.append(data_object)
+    def create(data: dict) -> tuple:
+        data_object = Data(data.get("message"), data.get("timestamp"))
+        db_object = Database()
+        db_object.insert("logs", ", ".join(list(data_object.to_dict().keys())), 
+                         f"'{data_object.data_id}', '{data_object.message}', {data_object.timestamp}, {data_object.status.value}")
         return True, 201
 
     # Get all data objects from the data list.
     @staticmethod
-    def read_all(self) -> list[dict]:
+    def read_all() -> list[dict]:
         pass
         # return self.data
 
     # Get a data object by data_id from the data list.
-    def read(self, data_id: str) -> Data | None:
+    def read(data_id: str) -> Data | None:
         # for data in self.data:
         #     if str(data.data_id) == data_id:
         #         return data
@@ -28,7 +31,7 @@ class DataService:
 
     # Update a data object by data_id from the data list.
     @staticmethod
-    def update(self, data_id: str, message: str, timestamp: float, source_ip: str):
+    def update(data_id: str, message: str, timestamp: float, source_ip: str):
         # for data in self.data:
         #     if str(data.data_id) == data_id:
         #         data.message = message

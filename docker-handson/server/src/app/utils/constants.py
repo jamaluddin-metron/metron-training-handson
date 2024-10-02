@@ -1,3 +1,4 @@
-
+import os
 class Constants:
-    pass
+    DB_NAME = os.getenv('DB_NAME', 'metron')
+    

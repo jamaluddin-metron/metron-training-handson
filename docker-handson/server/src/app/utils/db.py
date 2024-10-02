@@ -1,5 +1,6 @@
 import sqlite3
 from .logger import get_logger
+from .constants import Constants
 
 logger = get_logger(__name__)
 
@@ -7,8 +8,8 @@ logger = get_logger(__name__)
 # on Data Model.
 
 class Database:
-    def __init__(self, db_name):
-        self.db_name = db_name
+    def __init__(self):
+        self.db_name = Constants.DB_NAME + ".db"
 
     def _connect(self):
         return sqlite3.connect(self.db_name)
