@@ -40,29 +40,35 @@ class Database:
             conn.close()
 
     def select(self, table, columns="*", where_clause=""):
+        rows = []
         try:
             conn = self._connect()
             cursor = conn.cursor()
             query = f"SELECT {columns} FROM {table} {where_clause}"
             cursor.execute(query)
             rows = cursor.fetchall()
-            return rows
+            logger.debug(f"Rows Fetched: {rows}")
         except sqlite3.Error as e:
-            print(e)
+            logger.error(f"Error Occured while trying to fetch logs from DB:\n{e}")
         finally:
             conn.close()
+            return rows
 
     def update(self, table, set_clause, where_clause):
+        transaction_status = False
+        id_missing = False
         try:
             conn = self._connect()
             cursor = conn.cursor()
             query = f"UPDATE {table} SET {set_clause} WHERE {where_clause}"
             cursor.execute(query)
             conn.commit()
+            transaction_status = True
         except sqlite3.Error as e:
-            print(e)
+            logger.error(f"Error Occured while trying to update logs in DB:\n{e}")
         finally:
             conn.close()
+            return transaction_status
 
     def delete(self, table, where_clause):
         try:

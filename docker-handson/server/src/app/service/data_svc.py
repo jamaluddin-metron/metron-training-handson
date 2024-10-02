@@ -1,8 +1,11 @@
 from app.model import Data
-from app.utils import Status, Database
+from app.utils import Status, Database, get_logger
+
+logger = get_logger(__name__)
 
 # Service Class to handle CRUD operations on Data Model.
 class DataService:
+    db_object = Database()
     def __init__(self):
         pass
 
@@ -10,10 +13,10 @@ class DataService:
     @staticmethod
     def create(data: dict) -> tuple:
         data_object = Data(data.get("message"), data.get("timestamp"))
-        db_object = Database()
-        db_object.insert("logs", ", ".join(list(data_object.to_dict().keys())), 
+        
+        transaction_status = DataService.db_object.insert("logs", ", ".join(list(data_object.to_dict().keys())), 
                          f"'{data_object.data_id}', '{data_object.message}', {data_object.timestamp}, {data_object.status.value}")
-        return True, 201
+        return transaction_status, 201 if transaction_status else 500
 
     # Get all data objects from the data list.
     @staticmethod
@@ -31,15 +34,19 @@ class DataService:
 
     # Update a data object by data_id from the data list.
     @staticmethod
-    def update(data_id: str, message: str, timestamp: float, source_ip: str):
-        # for data in self.data:
-        #     if str(data.data_id) == data_id:
-        #         data.message = message
-        #         data.timestamp = timestamp
-        #         data.source_ip = source_ip
-        #         return data
-        # return None
-        pass
+    def update(data_id: str, status: str) -> tuple:
+        check_id = True if DataService.db_object.select("logs", "data_id", f"WHERE data_id = '{data_id}'") else False
+        if not check_id:
+            logger.error(f"Data ID: {data_id} not found in the logs.")  
+            return False, 400
+        try:
+            status_value = Status.get_status_value(status)
+        except:
+            logger.error(f"Invalid Status value: {status} supplied.")
+            return False, 400
+        transaction_status = DataService.db_object.update("logs", f"status = {status_value}", f"data_id = '{data_id}'")
+        
+        return transaction_status, 201 if transaction_status else 500
 
     # Delete a data object by data_id from the data list.
     @staticmethod

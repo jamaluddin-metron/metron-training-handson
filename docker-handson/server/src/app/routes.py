@@ -18,7 +18,7 @@ def register_routes(app: Flask):
         try:
             data = request.get_json()
             logger.debug(f"Received Data Payload: {data}")
-            result, response_status = DataService.create(data) if Helper.validate_data(data) else False, 400
+            result, response_status = DataService.create(data) if Helper.validate_post_data(data) else (False, 400)
             if result:
                 logger.info("New Log Entry stored successfully.")
                 return jsonify({'message': 'Data stored successfully.'}), 201
@@ -32,9 +32,25 @@ def register_routes(app: Flask):
             logger.error(f"Error Occured while trying to store new log data:\n{error}")
             return jsonify({'error': 'Server Encountered an Error'}), 500
 
-    @app.route('/data', methods=['PUT'])
-    def update_data():
-        pass
+    @app.route('/data/<string:data_id>', methods=['PUT'])
+    def update_data(data_id):
+        try:
+            data = request.get_json()
+            logger.debug(f"Received Data Payload: {data}")
+            logger.debug(f"Received Data ID: {data_id}")
+            result, response_status = DataService.update(data_id, data.get("status")) if Helper.validate_put_data(data) else (False, 400)
+            if result:
+                logger.info("Log Entry updated successfully.")
+                return jsonify({'message': 'Data updated successfully.'}), response_status
+            elif not result and response_status == 400:
+                logger.error(f"Invalid Data Id or Payload Supplied.")
+                return jsonify({'message': 'Data is invalid.'}), response_status
+            else:
+                logger.error(f"Failed to update data. Check logs")
+                return jsonify({'message': 'Failed to update data.'}), response_status
+        except Exception as error:
+            logger.error(f"Error Occured while trying to update log data:\n{error}")
+            return jsonify({'error': 'Server Encountered an Error'}), 500
 
     @app.route('/data', methods=['DELETE'])
     def delete_data():
