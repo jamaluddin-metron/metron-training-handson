@@ -24,7 +24,7 @@ class Data:
     to_dict():
         Converts the data record to a dictionary format.
     """
-    def __init__(self, message: str, timestamp: float, status: Status = Status.ACTIVE, data_id:str = str(uuid4())):
+    def __init__(self, message: str, timestamp: float, status: Status = Status.ACTIVE, data_id:str = None ):
         """
         Initializes a new instance of the Data class.
         Args:
@@ -33,7 +33,7 @@ class Data:
             status (Status, optional): The status of the data. Defaults to Status.ACTIVE.
             data_id (str, optional): The unique identifier for the data. Defaults to a new UUID string.
         """
-        self.data_id = data_id
+        self.data_id = str(uuid4()) if data_id is None else data_id
         self.message = message
         self.timestamp = timestamp
         self.status = status
