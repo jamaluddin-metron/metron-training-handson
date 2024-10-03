@@ -41,7 +41,7 @@ const PaginatedTable = () => {
 
         setData(data.map(entry => {
             if (entry.data_id === dataId) {
-                entry.status = status.toUpperCase();
+                entry.status = selectedStatus.toUpperCase();
             }
             return entry;
         }));
@@ -68,6 +68,7 @@ const PaginatedTable = () => {
         return <div>Fetching Events....</div>;
     }else{    
         // Calculate the index of the last and first entry of the current page
+        console.log(data);
         const indexOfLastEntry = currentPage * entriesPerPage;
         const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
         const currentEntries = data.slice(indexOfFirstEntry, indexOfLastEntry);

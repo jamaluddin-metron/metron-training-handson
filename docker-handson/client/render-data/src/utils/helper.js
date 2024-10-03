@@ -2,7 +2,7 @@ import { API_URL } from "./constants";
 
 const fetchData = async () => {
     try{
-        const response = await fetch(`${API_URL}/data`);
+        const response = await fetch(`${API_URL}/api`);
         // Check for response status and log error if not 200.
         if (!response.status === 200) {
             console.error(`Failed to fetch data from ${API_URL}`);
@@ -22,7 +22,7 @@ const fetchData = async () => {
 
 const putData = async (dataId, status) => {
     try{
-        const response = await fetch(`${API_URL}/data/${dataId}`, {
+        const response = await fetch(`${API_URL}/api/${dataId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -42,7 +42,7 @@ const putData = async (dataId, status) => {
 
 const deleteData = async (dataId) => {
     try{
-        const response = await fetch(`${API_URL}/data/${dataId}`, {
+        const response = await fetch(`${API_URL}/api/${dataId}`, {
             method: 'DELETE'
         });
         if (!response.status === 200) {
