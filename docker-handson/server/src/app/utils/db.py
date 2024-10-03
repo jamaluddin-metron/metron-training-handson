@@ -29,15 +29,18 @@ class Database:
             return transaction_status
 
     def insert(self, table, columns, values):
+        transaction_status = False
         try:
             conn = self._connect()
             cursor = conn.cursor()
             cursor.execute(f"INSERT INTO {table} ({columns}) VALUES ({values})")
             conn.commit()
+            transaction_status = True
         except sqlite3.Error as e:
-            print(e)
+            logger.error(f"Error Occured while trying to store logs in DB:\n{e}")
         finally:
             conn.close()
+            return transaction_status
 
     def select(self, table, columns="*", where_clause=""):
         rows = []
@@ -56,7 +59,6 @@ class Database:
 
     def update(self, table, set_clause, where_clause):
         transaction_status = False
-        id_missing = False
         try:
             conn = self._connect()
             cursor = conn.cursor()
@@ -71,13 +73,16 @@ class Database:
             return transaction_status
 
     def delete(self, table, where_clause):
+        row_count = 0
         try:
             conn = self._connect()
             cursor = conn.cursor()
             query = f"DELETE FROM {table} WHERE {where_clause}"
             cursor.execute(query)
+            row_count = cursor.rowcount
             conn.commit()
         except sqlite3.Error as e:
-            print(e)
+            logger.error(f"Error Occured while trying to delete logs from DB:\n{e}")
         finally:
             conn.close()
+            return row_count

@@ -11,7 +11,13 @@ def register_routes(app: Flask):
     
     @app.route('/data', methods=['GET'])
     def get_data():
-        return jsonify({'data': 'GET'})
+        try:
+            data = DataService.read_all()
+            logger.debug(f"Data Retrieved: {data}")
+            return jsonify(data), 200
+        except Exception as error:
+            logger.error(f"Error Occured while trying to retrieve log data:\n{error}")
+            return jsonify({'error': 'Server Encountered an Error'}), 500
         
     @app.route('/data', methods=['POST'])
     def store_data():
@@ -52,6 +58,17 @@ def register_routes(app: Flask):
             logger.error(f"Error Occured while trying to update log data:\n{error}")
             return jsonify({'error': 'Server Encountered an Error'}), 500
 
-    @app.route('/data', methods=['DELETE'])
-    def delete_data():
-        pass
+    @app.route('/data/<string:data_id>', methods=['DELETE'])
+    def delete_data(data_id):
+        try:
+            logger.debug(f"Received Data ID: {data_id}")
+            result = DataService.delete(data_id)
+            if result:
+                logger.info("Log Entry deleted successfully.")
+                return jsonify({'message': 'Data deleted successfully.'}), 200
+            else:
+                logger.error(f"Failed to delete data. Check logs")
+                return jsonify({'message': 'Failed to delete data. Invalid Id or Internal Error'}), 400
+        except Exception as error:
+            logger.error(f"Error Occured while trying to delete log data:\n{error}")
+            return jsonify({'error': 'Server Encountered an Error'}), 500

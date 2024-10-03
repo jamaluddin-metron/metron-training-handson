@@ -16,13 +16,22 @@ class DataService:
         
         transaction_status = DataService.db_object.insert("logs", ", ".join(list(data_object.to_dict().keys())), 
                          f"'{data_object.data_id}', '{data_object.message}', {data_object.timestamp}, {data_object.status.value}")
-        return transaction_status, 201 if transaction_status else 500
+        logger.debug(f"Transaction Status: {transaction_status}")
+        return (transaction_status, 201) if transaction_status else (False, 500)
 
     # Get all data objects from the data list.
     @staticmethod
     def read_all() -> list[dict]:
-        pass
-        # return self.data
+        data = DataService.db_object.select("logs")
+        data_list = []
+        for row in data:
+            data_list.append({
+                "data_id": row[0],
+                "message": row[1],
+                "timestamp": row[2],
+                "status": Status.get_status_name(row[3])
+            })
+        return data_list
 
     # Get a data object by data_id from the data list.
     def read(data_id: str) -> Data | None:
@@ -50,11 +59,8 @@ class DataService:
 
     # Delete a data object by data_id from the data list.
     @staticmethod
-    def delete(self, data_id: str):
-        # for data in self.data:
-        #     if str(data.data_id) == data_id:
-        #         self.data.remove(data)
-        #         return data
-        # return None
-        pass
+    def delete(data_id: str):
+        row_count = DataService.db_object.delete("logs", f"data_id = '{data_id}'")
+        logger.debug(f"Rows Deleted: {row_count}")
+        return True if row_count > 0 else False  
 
