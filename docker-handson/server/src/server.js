@@ -42,19 +42,19 @@ app.use((req, res, next) => {
 // Forwarding function
 const forwardRequest = async (method, req, res) => {
   try {
-    logger.debug(req.method)
-    logger.debug(JSON.stringify(req.body))
+    // logger.debug(req.method)
+    // logger.debug(JSON.stringify(req.body))
     method = req.method;
     let url = `${TARGET_SERVER}:${TARGET_PORT}` + req.path.replace('/api', '/data');
     let headers = {
             'Content-Type': 'application/json'
         }
-    let body = req.body;
+    let body = JSON.stringify(req.body);
 
     logger.info(`Forwarding ${method.toUpperCase()} request to ${url}`);
     
     if (req.method === 'POST' || req.method === 'PUT') {
-        body = JSON.stringify(req.body);
+        // body = JSON.stringify(req.body);
         return await fetch(url, {
             method: req.method,
             headers: headers,

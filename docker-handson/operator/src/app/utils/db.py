@@ -12,7 +12,7 @@ class Database:
         self.db_name = Constants.DB_NAME + ".db"
 
     def _connect(self):
-        return sqlite3.connect(self.db_name)
+        return sqlite3.connect(f"db/{self.db_name}")
 
     def create_table(self, create_table_sql) -> bool:
         transaction_status = False
