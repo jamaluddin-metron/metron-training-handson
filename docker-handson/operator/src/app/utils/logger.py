@@ -21,6 +21,8 @@ def get_logger(name: str) -> Logger:
         Logger: The logger instance.
 
     """
+    os.makedirs('logs', exist_ok=True)
+    print("log directory created")
     file_handler = logging.FileHandler('logs/operator.log')
     file_handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s, %(name)s]:%(message)s'))
     stream_handler = logging.StreamHandler()

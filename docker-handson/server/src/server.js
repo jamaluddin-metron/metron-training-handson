@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const winston = require('winston');
-
+const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT? process.env.PORT: 8081; // Your Express server port
 const TARGET_SERVER = process.env.OPERATOR_HOST? `http://${process.env.OPERATOR_HOST}`:'http://localhost'; // Change to your target server
@@ -12,6 +12,13 @@ const TARGET_PORT = process.env.OPERATOR_PORT? process.env.OPERATOR_PORT:5000; /
 app.use(cors()); // Enable CORS
 app.use(express.json()); // Parse JSON 
 
+
+// Create logging directory if it doesn't exists
+
+if (!fs.existsSync("logs")) {
+  fs.mkdirSync(logs);
+  console.log("logs directory created");
+}
 
 // Define logger
 // Create a custom log format
